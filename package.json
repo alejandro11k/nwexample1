@@ -1,4 +1,7 @@
 {
   "name": "helloworld",
-  "main": "main.js"
+  "main": "main.js",
+  "dependencies": {
+    "url-exists": "^1.0.3"
+  }
 }

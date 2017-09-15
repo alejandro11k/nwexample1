@@ -14,79 +14,75 @@
 
 <script>
 var urlExists = require("url-exists");
+var promiseUntil = require("promise-until");
 var url = nw.App.fullArgv[0].slice(6);
 var accesOk = false;
 
-// Open a new window.
-nw.Window.open(url, {}, function(win) {
-  // Release the 'win' object here after the new window is closed.
-  win.on("closed", function() {
-    win = null;
+var open = () => {
+  // Open a new window.
+  nw.Window.open(url, {}, function(win) {
+    // Release the 'win' object here after the new window is closed.
+    win.on("closed", function() {
+      win = null;
+    });
   });
-});
-
-urlExists(url, function(err, exists) {
-if(!exists){
-  urlExists(url)
 }
-  return exists;
-});
 
+var myInterval = setInterval(function(){
+     chkurl();
+},5000);
 
+var foo = function () {
+    clearInterval(myInterval);
+};
 
+var count = 0;
 
 function chkurl() {
   urlExists(url, function(err, exists) {
-    console.log(exists); // true
-    accesOk = exists;
+    //console.log(exists); // true
+    //accesOk = exists;
+    console.log('in ' + count++);
+    if(exists){
+      console.log('ok');
+      clearInterval(myInterval);
+      open();
+    }
+    //return exists;
   });
 }
 
-let miPrimeraPromise = new Promise((resolve, reject) => {
-  // Llamamos a resolve(...) cuando lo que estabamos haciendo finaliza con éxito, y reject(...) cuando falla.
-  // En este ejemplo, usamos setTimeout(...) para simular código asíncrono.
-  // En la vida real, probablemente uses algo como XHR o una API HTML5.
+console.log(chkurl());
 
+let miPrimeraPromise = new Promise((resolve, reject) => {
   /*
   setTimeout(function() {
     resolve("¡Éxito!"); // ¡Todo salió bien!
   }, 250
 */
   urlExists(url, function(err, exists) {
-    console.log(exists); // true
+    //console.log(exists); // true
     accesOk = exists;
     resolve(exists);
+    console.log('succ');
   });
 
 });
 
-
+//open();
 
 miPrimeraPromise.then(successMessage => {
-  var l=succesMessage;
   // succesMessage es lo que sea que pasamos en la función resolve(...) de arriba.
   // No tiene por qué ser un string, pero si solo es un mensaje de éxito, probablemente lo sea.
   console.log("¡Sí! " + successMessage);
 
 });
 
-var intervalID = window.setInterval(miFuncion, 1000);
+var intervalID = window.setInterval(miFuncion, 10000);
 
 function miFuncion() {
   console.log('interval');
 }
-
-/*
-chkurl().then( () =>{
-  if (accesOk) {
-
-  } else {
-
-  }
-
-});
-*/
-
 
 /*
 onload = function() {
@@ -108,22 +104,12 @@ onload = function() {
 }
 */
 
-/*
-var url;
-function loaded() {
-  console.log(window.frames[0].document);
-  console.log('loaded...');
-  // Returns the actual page
-}
-*/
 
-/*
-document.getElementById("showskill").src = "http://google.com";
-*/
-
-/*
 // Create an empty context menu
 var menu = new nw.Menu();
+
+// Popup as context menu
+//menu.popup(10, 10);
 
 // Add some items with label
 menu.append(new nw.MenuItem({
@@ -132,6 +118,12 @@ menu.append(new nw.MenuItem({
     alert('You have clicked at "Item A"');
   }
 }));
+
+// get the system platform using node.js
+var os = require('os');
+document.write('You are running on ', os.platform());
+
+/*
 menu.append(new nw.MenuItem({ label: 'Item B' }));
 menu.append(new nw.MenuItem({ type: 'separator' }));
 menu.append(new nw.MenuItem({ label: 'Item C' }));
@@ -142,15 +134,12 @@ document.body.addEventListener('contextmenu', function(ev) {
   ev.preventDefault();
   // Popup the native context menu at place you click
   menu.popup(ev.x, ev.y);
-
   return false;
 }, false);
 */
 
 /*
-// get the system platform using node.js
-var os = require('os');
-document.write('You are running on ', os.platform());
+
 
 //
 var request = require('then-request');
@@ -168,20 +157,6 @@ request('GET', 'http://camba.coop').done(function (res) {
 */
 
 /*
-// CDM-444
-var urlExists = require('url-exists');
-var e1,e2;
-
-urlExists('https://www.google.com', function(err, exists) {
-  console.log(exists); // true
-  e1 = exists;
-});
-
-urlExists('https://www.fakeurl.notreal', function(err, exists) {
-  console.log(exists); // false
-  e2 = exists;
-});
-
 document.write(' statusCode ', r ,' ' , e1 , ' ' , e2);
 */
 
