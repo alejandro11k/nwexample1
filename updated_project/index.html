@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Context Menu</title>
+</head>
+<body> <!--style="width: 100%; height: 100%;"-->
+
+<text id="foo">
+<p id="para">Some text here</p>
+<!--p>'Right click' to show context menu.</p-->
+<!--iframe src="http://google.com" width="800" height="600" id="myIframe" onload="loaded()"></iframe-->
+<!--iframe id="showskill" scrolling="yes" height="350" width ="350" src="" nwdisable nwfaketop></iframe-->
+<!--iframe src="http://127.0.0.1:3000/login/" width="400" height="400" nwdisable nwfaketop onload="loaded()"></iframe-->
+<!--webview id="foo" src="http://www.google.com/" autosize="on"></webview-->
+<!--webview id="foo" src="http://localhost:3000" autosize="on"></webview-->
+
+<script>
+var urlExists = require("url-exists");
+var promiseUntil = require("promise-until");
+var url = "http://google.com.ar" //nw.App.fullArgv[0].slice(6);
+var accesOk = false;
+
+var autoUpdater = require("nw-autoupdater")
+
+console.log(autoUpdater);
+
+var open = () => {
+  // Open a new window.
+  nw.Window.open(url, {}, function(win) {
+    // Release the 'win' object here after the new window is closed.
+    win.on("closed", function() {
+      win = null;
+    });
+  });
+}
+
+
+/*
+let div = document.createElement('div');
+div.className = "alert alert-success";
+div.innerHTML = "<strong>Hi there!</strong> You've read an important message for first time.";
+document.body.appendChild(div);
+
+let div2 = document.createElement('div');
+div2.className = "alert alert-success";
+div2.innerHTML = "<strong>Hi there!</strong> You've read an important message .";
+*/
+let o = document.createElement('pre');
+o.id = "output";
+document.body.appendChild(o);
+
+let newMsg = document.createElement('div');
+newMsg.innerHTML = "<strong>Hi there!</strong> I'm UpDated!! :) .";
+document.body.appendChild(newMsg);
+
+const AutoUpdater = require( "nw-autoupdater" ),
+            updater = new AutoUpdater( require( "./package.json" ) ),
+            output =  document.querySelector( "#output" );
+
+      async function main(){
+        try {
+
+           // Update copy is running to replace app with the update
+          if ( updater.isSwapRequest() ) {
+            output.innerHTML += `\nSwapping...`;
+            await updater.swap();
+            output.innerHTML += `\nDone...`;
+            await updater.restart();
+            return;
+          }
+
+          // Download/unpack update if any available
+          const rManifest = await updater.readRemoteManifest();
+          const needsUpdate = await updater.checkNewVersion( rManifest );
+          if ( !needsUpdate ) {
+            output.innerHTML += `\nApp is up to date...`;
+            return;
+          }
+          if ( !confirm( "New release is available. Do you want to upgrade?" ) ) {
+            return;
+          }
+
+          // Subscribe for progress events
+          updater.on( "download", ( downloadSize, totalSize ) => {
+            output.innerHTML = `Downloading...`;
+            console.log( "download progress", Math.floor( downloadSize / totalSize * 100 ), "%" );
+          });
+          updater.on( "install", ( installFiles, totalFiles ) => {
+            output.innerHTML = `Installing...\n`;
+            console.log( "install progress", Math.floor( installFiles / totalFiles * 100 ), "%" );
+          });
+
+          const updateFile = await updater.download( rManifest );
+          await updater.unpack( updateFile );
+          alert( `The application will automatically restart to finish installing the update` );
+          await updater.restartToSwap();
+        } catch ( e ) {
+          console.error( e );
+        }
+      }
+
+      output.innerHTML = `Application ver. ${nw.App.manifest.version}\n`;
+
+      main();
+/*
+var myInterval = setInterval(function(){
+     chkurl();
+},5000);
+*/
+var foo = function () {
+    clearInterval(myInterval);
+};
+
+var count = 0;
+
+function chkurl() {
+  urlExists(url, function(err, exists) {
+    //console.log(exists); // true
+    //accesOk = exists;
+    //document.write('...reintentando... ');
+    //console.log(document.body);
+    //var elem = document.getElementById('para');
+    //elem.style.color = newColor;
+    //console.log(elem);
+    //document.body.removeChild(div);
+    //document.body.replaceChild(div2, div)
+    let div = document.createElement('div');
+    div.className = "alert alert-success";
+    div.innerHTML = "<strong>Hi there!</strong> You've read an important message " + count;
+
+    /*
+    if (count === 0) {
+      document.body.appendChild(div);
+      console.log('if');
+    } if (count === 1)  {
+      //document.body.remove(div);
+      console.log('remove');
+      //document.body.appendChild(div);
+    } else {
+      document.body.replaceWith(div);
+    }
+    */
+
+    document.body.appendChild(div);
+
+    console.log('in ' + count++);
+    if(exists){
+      console.log('ok');
+      clearInterval(myInterval);
+      open();
+    }
+    //return exists;
+  });
+}
+
+
+
+
+
+let miPrimeraPromise = new Promise((resolve, reject) => {
+  /*
+  setTimeout(function() {
+    resolve("¡Éxito!"); // ¡Todo salió bien!
+  }, 250
+*/
+  urlExists(url, function(err, exists) {
+    //console.log(exists); // true
+    accesOk = exists;
+    resolve(exists);
+    console.log('succ');
+  });
+
+});
+
+//open();
+
+miPrimeraPromise.then(successMessage => {
+  // succesMessage es lo que sea que pasamos en la función resolve(...) de arriba.
+  // No tiene por qué ser un string, pero si solo es un mensaje de éxito, probablemente lo sea.
+  console.log("¡Sí! " + successMessage);
+
+});
+
+var intervalID = window.setInterval(miFuncion, 10000);
+
+function miFuncion() {
+  console.log('interval');
+}
+
+/*
+onload = function() {
+  var webview = document.getElementById("foo");
+  var indicator = document.querySelector(".indicator");
+
+  var loadstart = function() {
+    indicator.innerText = "loading...";
+    //console.log('loading...');
+  }
+
+  var loadstop = function() {
+    indicator.innerText = "";
+    //console.log('loaded');
+  }
+
+  webview.addEventListener("loadstart", loadstart);
+  webview.addEventListener("loadstop", loadstop);
+}
+*/
+
+
+// Create an empty context menu
+var menu = new nw.Menu();
+
+// Popup as context menu
+//menu.popup(10, 10);
+
+// Add some items with label
+/*
+menu.append(new nw.MenuItem({
+  label: 'Item A',
+  click: function(){
+    alert('You have clicked at "Item A"');
+  }
+}));
+*/
+
+// get the system platform using node.js
+var os = require('os');
+document.write('You are running on ', os.platform());
+
+/*
+menu.append(new nw.MenuItem({ label: 'Item B' }));
+menu.append(new nw.MenuItem({ type: 'separator' }));
+menu.append(new nw.MenuItem({ label: 'Item C' }));
+
+// Hooks the "contextmenu" event
+document.body.addEventListener('contextmenu', function(ev) {
+  // Prevent showing default context menu
+  ev.preventDefault();
+  // Popup the native context menu at place you click
+  menu.popup(ev.x, ev.y);
+  return false;
+}, false);
+*/
+
+/*
+
+
+//
+var request = require('then-request');
+var r;
+*/
+
+/*
+//si le tire frula rompe o no conection
+request('GET', 'http://camba.coop').done(function (res) {
+  //console.log(res.getBody());
+  console.log(res.statusCode);
+  //console.log(getBody(res));
+  r = res;
+});
+*/
+
+/*
+document.write(' statusCode ', r ,' ' , e1 , ' ' , e2);
+*/
+
+/*
+function getBody(encoding) {
+  if (this.statusCode >= 300) {
+    var err = new Error('Server responded with status code ' + this.statusCode + ':\n' + this.body.toString(encoding));
+    err.statusCode = this.statusCode;
+    err.headers = this.headers;
+    err.body = this.body;
+    throw err;
+  }
+  return encoding ? this.body.toString(encoding) : this.body;
+}
+*/
+</script>
+</body>
+</html>
