@@ -1,7 +1,12 @@
 {
   "name": "helloworld",
+  "version": "0.0.1",
   "main": "main.js",
   "dependencies": {
     "url-exists": "^1.0.3"
+  },
+  "manifestUrl": "http://127.0.0.1:8080/package.json",
+  "devDependencies": {
+    "nw-autoupdater": "^1.1.3"
   }
 }
