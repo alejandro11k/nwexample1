@@ -1,3 +1,6 @@
 # Dependency directories
 node_modules/
 builded_app/
+server/releases/helloworld-r0.0.1-linux-x64.zip
+server/releases/helloworld-r0.0.2-linux-x64.zip
+
